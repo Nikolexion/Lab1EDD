@@ -2,6 +2,8 @@
 #define MOVING_IMG_H
 
 #include "basics.h"
+#include<deque>
+#include<utility>
 
 // Clase que representa una imagen como una colección de 3 matrices siguiendo el
 // esquema de colores RGB
@@ -11,6 +13,7 @@ private:
   unsigned char **red_layer; // Capa de tonalidades rojas
   unsigned char **green_layer; // Capa de tonalidades verdes
   unsigned char **blue_layer; // Capa de tonalidades azules
+  std::deque<std::pair<int,int>> ctrlz;
 
 public:
   // Constructor de la imagen. Se crea una imagen por defecto
@@ -111,6 +114,10 @@ public:
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
     	blue_layer[i][j] = tmp_layer[i][j];
+    std::pair<int,int> temp;
+    temp.first = 0;
+    temp.second = d;
+    ctrlz.push_back(temp);
   }
 
   void move_right(int d) {
@@ -156,6 +163,11 @@ public:
     for(int i=0; i < H_IMG; i++)
         for(int j=0; j < W_IMG; j++)
             blue_layer[i][j] = tmp_layer[i][j];
+
+    std::pair<int,int> temp;
+    temp.first = 1;
+    temp.second = d;
+    ctrlz.push_back(temp);
   }
 
   void move_up(int d) {
@@ -201,6 +213,11 @@ public:
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
     	blue_layer[i][j] = tmp_layer[i][j];
+
+    std::pair<int,int> temp;
+    temp.first = 2;
+    temp.second = d;
+    ctrlz.push_back(temp);
   }
 
   void move_down(int d) {
@@ -246,6 +263,36 @@ public:
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
     	blue_layer[i][j] = tmp_layer[i][j];
+    
+    std::pair<int,int> temp;
+    temp.first = 3;
+    temp.second = d;
+    ctrlz.push_back(temp);
+  }
+
+  void undo(){
+    std::pair<int,int> temp =  ctrlz.back();
+    switch (temp.first)
+    {
+    case 0:
+      move_right(temp.second);
+      //aqui se debe añadir la accion al redo()
+      break;
+    case 1:
+      move_left(temp.second);
+
+      break;
+    case 2:
+      move_down(temp.second);
+
+      break;
+    case 3:
+      move_up(temp.second);
+    
+    default:
+      break;
+    }
+    ctrlz.pop_back();
   }
 
 
