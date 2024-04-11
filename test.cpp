@@ -13,7 +13,7 @@ int main() {
 
   while(1){
     im.draw("imagen.png");
-    im.move_up(50);
+    im.move_down(50);
     sleep(1);
   }
 
