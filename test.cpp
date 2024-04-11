@@ -13,8 +13,8 @@ int main() {
 
   while(1){
     im.draw("imagen.png");
-  im.move_right(50);
-  sleep(1);
+    im.move_up(50);
+    sleep(1);
   }
 
   /* NOTA 1: Si usan el mismo nombre para las imágenes, entonces cada llamada al
