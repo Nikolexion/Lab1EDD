@@ -11,9 +11,7 @@
 int main() {
   moving_image im;
   im.draw("imagen.png");
-  im.move_right(100);
-  im.draw("imagen.png");
-  sleep(1);
+  sleep(2);
   im.move_right(100);
   im.draw("imagen.png");
   sleep(1);
@@ -26,13 +24,10 @@ int main() {
   im.undo();
   im.draw("imagen.png");
   sleep(1);
-  im.move_up(100);
+  im.redo();
   im.draw("imagen.png");
   sleep(1);
-  im.move_up(100);
-  im.draw("imagen.png");
-  sleep(1);
-  im.undo();
+  im.redo();
   im.draw("imagen.png");
   /* NOTA 1: Si usan el mismo nombre para las imágenes, entonces cada llamada al
   método draw() sobreescribirá a la imagen */

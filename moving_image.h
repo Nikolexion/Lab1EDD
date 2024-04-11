@@ -4,6 +4,7 @@
 #include "basics.h"
 #include<deque>
 #include<utility>
+#include<stack>
 
 // Clase que representa una imagen como una colección de 3 matrices siguiendo el
 // esquema de colores RGB
@@ -14,6 +15,7 @@ private:
   unsigned char **green_layer; // Capa de tonalidades verdes
   unsigned char **blue_layer; // Capa de tonalidades azules
   std::deque<std::pair<int,int>> ctrlz;
+  std::stack<std::pair<int,int>> ctrlmz;
 
 public:
   // Constructor de la imagen. Se crea una imagen por defecto
@@ -118,6 +120,9 @@ public:
     temp.first = 0;
     temp.second = d;
     ctrlz.push_back(temp);
+    
+    std::stack<std::pair<int,int>> basura;
+    basura.swap(ctrlmz);
   }
 
   void move_right(int d) {
@@ -168,6 +173,9 @@ public:
     temp.first = 1;
     temp.second = d;
     ctrlz.push_back(temp);
+
+    std::stack<std::pair<int,int>> basura;
+    basura.swap(ctrlmz);
   }
 
   void move_up(int d) {
@@ -218,6 +226,9 @@ public:
     temp.first = 2;
     temp.second = d;
     ctrlz.push_back(temp);
+
+    std::stack<std::pair<int,int>> basura;
+    basura.swap(ctrlmz);
   }
 
   void move_down(int d) {
@@ -228,7 +239,7 @@ public:
     // Mover la capa roja
     for(int i=d; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-	tmp_layer[i][j] = red_layer[i-d][j];      
+	    tmp_layer[i][j] = red_layer[i-d][j];      
     
     for(int i=0, k=H_IMG - d; i < d; i++, k++)
       for(int j=0; j < W_IMG; j++)
@@ -236,7 +247,7 @@ public:
 
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-	red_layer[i][j] = tmp_layer[i][j];
+	    red_layer[i][j] = tmp_layer[i][j];
 
     // Mover la capa verde
     for(int i=d; i < H_IMG; i++)
@@ -268,31 +279,82 @@ public:
     temp.first = 3;
     temp.second = d;
     ctrlz.push_back(temp);
+
+    std::stack<std::pair<int,int>> basura;
+    basura.swap(ctrlmz);
   }
 
   void undo(){
+    if (ctrlz.size() == 0) return;
+    
+
     std::pair<int,int> temp =  ctrlz.back();
-    switch (temp.first)
-    {
+    ctrlz.pop_back();
+
+    std::pair<int,int> temp_redo;
+    std::stack<std::pair<int,int>> respaldo_redo;
+    respaldo_redo.swap(ctrlmz);
+
+    switch (temp.first){
     case 0:
+      temp_redo.first = 0;
+      temp_redo.second = temp.second;
+      respaldo_redo.push(temp_redo); 
       move_right(temp.second);
-      //aqui se debe añadir la accion al redo()
+      ctrlz.pop_back();
+
       break;
     case 1:
+      temp_redo.first = 1;
+      temp_redo.second = temp.second;
+      respaldo_redo.push(temp_redo); 
       move_left(temp.second);
-
+      ctrlz.pop_back();
       break;
     case 2:
+      temp_redo.first = 2;
+      temp_redo.second = temp.second;
+      respaldo_redo.push(temp_redo); 
       move_down(temp.second);
-
+      ctrlz.pop_back();
       break;
     case 3:
+      temp_redo.first = 3;
+      temp_redo.second = temp.second;
+      respaldo_redo.push(temp_redo); 
       move_up(temp.second);
-    
+      ctrlz.pop_back();
     default:
       break;
     }
-    ctrlz.pop_back();
+    respaldo_redo.swap(ctrlmz);
+  }
+
+  void redo(){
+    if (ctrlmz.size() == 0) return;
+    
+    std::pair<int,int> temp = ctrlmz.top();
+    std::stack<std::pair<int,int>> respaldo_redo;
+    respaldo_redo.swap(ctrlmz);
+    switch (temp.first){
+    case 0:
+      move_left(temp.second);
+      break;
+    case 1:
+      move_right(temp.second);
+      break;
+    case 2:
+      move_up(temp.second);
+      break;
+    case 3:
+      move_down(temp.second);
+      break;
+    default:
+      break;
+    }
+    
+    respaldo_redo.swap(ctrlmz);
+    ctrlmz.pop();
   }
 
 
