@@ -5,6 +5,7 @@
 #include<deque>
 #include<utility>
 #include<stack>
+#include<unistd.h>
 
 // Clase que representa una imagen como una colección de 3 matrices siguiendo el
 // esquema de colores RGB
@@ -16,6 +17,7 @@ private:
   unsigned char **blue_layer; // Capa de tonalidades azules
   std::deque<std::pair<int,int>> ctrlz;
   std::stack<std::pair<int,int>> ctrlmz;
+  std::deque<std::pair<int,int>> rep;
 
 public:
   // Constructor de la imagen. Se crea una imagen por defecto
@@ -120,6 +122,7 @@ public:
     temp.first = 0;
     temp.second = d;
     ctrlz.push_back(temp);
+    rep.push_back(temp);
     
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -173,6 +176,7 @@ public:
     temp.first = 1;
     temp.second = d;
     ctrlz.push_back(temp);
+    rep.push_back(temp);
 
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -226,6 +230,7 @@ public:
     temp.first = 2;
     temp.second = d;
     ctrlz.push_back(temp);
+    rep.push_back(temp);
 
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -279,6 +284,7 @@ public:
     temp.first = 3;
     temp.second = d;
     ctrlz.push_back(temp);
+    rep.push_back(temp);
 
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -290,6 +296,10 @@ public:
 
     std::pair<int,int> temp =  ctrlz.back();
     ctrlz.pop_back();
+    std::pair<int,int> temp2;
+    temp2.first = 4;
+    temp2.second =0;
+    rep.push_back(temp2);
 
     std::pair<int,int> temp_redo;
     std::stack<std::pair<int,int>> respaldo_redo;
@@ -335,6 +345,11 @@ public:
     
     std::pair<int,int> temp = ctrlmz.top();
     std::stack<std::pair<int,int>> respaldo_redo;
+    std::pair<int,int> temp2;
+    temp2.first = 5;
+    temp2.first = 0;
+    rep.push_back(temp2);
+
     respaldo_redo.swap(ctrlmz);
     switch (temp.first){
     case 0:
@@ -358,13 +373,15 @@ public:
   }
 
   void repeat_all(){
-      if (ctrlz.empty()){
+      if (rep.empty()){
         return;
       }
+      std::deque<std::pair<int,int>> basura;
+      basura.swap(ctrlz);
 
-      for (int i = 0; i < ctrlz.size(); i++){
-        std::pair<int,int> temp = ctrlz.front();
-        ctrlz.pop_front();
+      for (int i = 0; i < rep.size(); i++){
+        std::pair<int,int> temp = rep.front();
+        rep.pop_front();
         switch (temp.first){
           case 0:
             move_left(temp.second);
@@ -378,9 +395,17 @@ public:
           case 3:
             move_down(temp.second);
             break;
+          case 4:
+            undo();
+            break;
+          case 5:
+            redo();
+            break;
           default:
             break;
           }
+          draw("imagen.png");
+          sleep(1);
       }
   }
 
