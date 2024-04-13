@@ -357,6 +357,33 @@ public:
     ctrlmz.pop();
   }
 
+  void repeat_all(){
+      if (ctrlz.empty()){
+        return;
+      }
+
+      for (int i = 0; i < ctrlz.size(); i++){
+        std::pair<int,int> temp = ctrlz.front();
+        ctrlz.pop_front();
+        switch (temp.first){
+          case 0:
+            move_left(temp.second);
+            break;
+          case 1:
+            move_right(temp.second);
+            break;
+          case 2:
+            move_up(temp.second);
+            break;
+          case 3:
+            move_down(temp.second);
+            break;
+          default:
+            break;
+          }
+      }
+  }
+
 
 private:
   // Función privada que guarda la imagen en formato .png
