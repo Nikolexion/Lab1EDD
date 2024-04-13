@@ -372,6 +372,14 @@ public:
     ctrlmz.pop();
   }
 
+  void repeat(){
+
+    std::pair<int,int> temp2;
+    temp2.first = 6;
+    temp2.first = 0;
+    rep.push_back(temp2);
+  }
+
   void repeat_all(){
       if (rep.empty()){
         return;
@@ -400,6 +408,9 @@ public:
             break;
           case 5:
             redo();
+            break;
+          case 6:
+            repeat();
             break;
           default:
             break;
