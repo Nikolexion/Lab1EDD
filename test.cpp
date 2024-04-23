@@ -31,7 +31,6 @@ int main() {
   im.draw("imagen.png");
   sleep(1);
   im.repeat_all();
-  im.draw("imagen.png");
   /* NOTA 1: Si usan el mismo nombre para las imágenes, entonces cada llamada al
   método draw() sobreescribirá a la imagen */
 
