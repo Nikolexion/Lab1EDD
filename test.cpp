@@ -18,6 +18,12 @@ int main() {
   im.rotate();
   im.draw("imagen.png");
   sleep(1);
+  im.rotate_inv();
+  im.draw("imagen.png");
+  sleep(1);
+  im.undo();
+  im.draw("imagen.png");
+  sleep(1);
   im.move_right(100);
   im.draw("imagen.png");
   sleep(1);
@@ -33,7 +39,6 @@ int main() {
   im.redo();
   im.draw("imagen.png");
   sleep(1);
-  im.repeat_all();
   /* NOTA 1: Si usan el mismo nombre para las imágenes, entonces cada llamada al
   método draw() sobreescribirá a la imagen */
 

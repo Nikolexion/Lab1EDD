@@ -293,6 +293,12 @@ public:
   }
 
   void rotate(){
+    std::pair<int,int> temp;
+    temp.first = 4;
+    temp.second = 0;
+    ctrlz.push(temp);
+    rep.push(temp);
+
     unsigned char **tmp_layer = new unsigned char*[H_IMG];
     for(int i=0; i < H_IMG; i++) 
       tmp_layer[i] = new unsigned char[W_IMG];
@@ -332,6 +338,8 @@ public:
             blue_layer[i][j] = tmp_layer[i][j];
         }
     }
+    std::stack<std::pair<int,int>> basura;
+    basura.swap(ctrlmz);
   }
 
     void rotate_inv(){
@@ -424,6 +432,13 @@ public:
       respaldo_redo.push(temp_redo); 
       move_up(temp.second);
       ctrlz.pop();
+
+    case 4:
+      temp_redo.first = 4;
+      temp_redo.second = 0;
+      respaldo_redo.push(temp_redo);
+      rotate_inv();
+      ctrlz.pop();
     default:
       break;
     }
@@ -460,6 +475,8 @@ public:
     case 3:
       move_down(temp.second);
       break;
+    case 4:
+      rotate();
     default:
       break;
     }
@@ -492,6 +509,10 @@ public:
 
     case 3:
       move_down(temp.second);
+      break;
+    
+    case 4:
+      rotate();
       break;
     
     default:
