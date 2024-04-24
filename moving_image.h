@@ -19,7 +19,7 @@ private:
   std::stack<std::pair<int,int>> ctrlz; //Ocupamos un stack para guardar los movimientos hechos por el usuario para poder insertar y sacar datos de la forma mas optima
   std::stack<std::pair<int,int>> ctrlmz; //Ocupamos un stack para guardar los movimientos hechos con el undo
   std::queue<std::pair<int,int>> rep; //Ocupamos un deque para guardar
-  int contador = 1;
+  int contador = 2;
 
 public:
   // Constructor de la imagen. Se crea una imagen por defecto
@@ -38,24 +38,24 @@ public:
     // Llenamos la imagen con su color de fondo
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++) {
-	red_layer[i][j] = DEFAULT_R;
-	green_layer[i][j] = DEFAULT_G;
-	blue_layer[i][j] = DEFAULT_B;
+        red_layer[i][j] = DEFAULT_R;
+        green_layer[i][j] = DEFAULT_G;
+        blue_layer[i][j] = DEFAULT_B;
       }
 
     // Dibujamos el objeto en su posición inicial
     for(int i=0; i < 322; i++)
       for(int j=0; j < 256; j++) {
-	if(!s_R[i][j] && !s_G[i][j] && !s_B[i][j]) {
-	  red_layer[INIT_Y+i][INIT_X+j] = DEFAULT_R;
-	  green_layer[INIT_Y+i][INIT_X+j] = DEFAULT_G;
-	  blue_layer[INIT_Y+i][INIT_X+j] = DEFAULT_B;
-	} else {
-	  red_layer[INIT_Y+i][INIT_X+j] = s_R[i][j];
-	  green_layer[INIT_Y+i][INIT_X+j] = s_G[i][j];
-	  blue_layer[INIT_Y+i][INIT_X+j] = s_B[i][j];
-	}
-      }   
+        if(!s_R[i][j] && !s_G[i][j] && !s_B[i][j]) {
+          red_layer[INIT_Y+i][INIT_X+j] = DEFAULT_R;
+          green_layer[INIT_Y+i][INIT_X+j] = DEFAULT_G;
+          blue_layer[INIT_Y+i][INIT_X+j] = DEFAULT_B;
+        } else {
+          red_layer[INIT_Y+i][INIT_X+j] = s_R[i][j];
+          green_layer[INIT_Y+i][INIT_X+j] = s_G[i][j];
+          blue_layer[INIT_Y+i][INIT_X+j] = s_B[i][j];
+        }
+      }
   }
 
   // Destructor de la clase
@@ -529,12 +529,18 @@ public:
       //Borramos los datos anteriormente guardados en el stack ctrlz
       std::stack<std::pair<int,int>> basura;
       basura.swap(ctrlz);
+      //Ocupamos una queue alternativa para no quedar en un bucle infinito
+      std::queue<std::pair<int,int>> temp_rep;
+      temp_rep.swap(rep);
+
+      reset_image();
+      draw("imagen1.png");
 
       //Empezamos a iterar por toda la queue de repeat_all ejecutando todas las acciones de nuevo
       //y guardando cada una en un archivo distinto
-      while(rep.size() != 0){
-        std::pair<int,int> temp = rep.front();
-        rep.pop();
+      while(temp_rep.size() != 0){
+        std::pair<int,int> temp = temp_rep.front();
+        temp_rep.pop();
         switch (temp.first){
           case 0:
             move_left(temp.second);
@@ -571,6 +577,30 @@ public:
         draw(nombre_imagen_cstr);
         contador++;
         sleep(1);
+      }
+  }
+
+  void reset_image(){ //Reutilizamos el codigo que hay en el constructor para devolver la imagen al inicio
+    // Llenamos la imagen con su color de fondo
+    for(int i=0; i < H_IMG; i++)
+      for(int j=0; j < W_IMG; j++) {
+        red_layer[i][j] = DEFAULT_R;
+        green_layer[i][j] = DEFAULT_G;
+        blue_layer[i][j] = DEFAULT_B;
+      }
+
+    // Dibujamos el objeto en su posición inicial
+    for(int i=0; i < 322; i++)
+      for(int j=0; j < 256; j++) {
+        if(!s_R[i][j] && !s_G[i][j] && !s_B[i][j]) {
+          red_layer[INIT_Y+i][INIT_X+j] = DEFAULT_R;
+          green_layer[INIT_Y+i][INIT_X+j] = DEFAULT_G;
+          blue_layer[INIT_Y+i][INIT_X+j] = DEFAULT_B;
+        } else {
+          red_layer[INIT_Y+i][INIT_X+j] = s_R[i][j];
+          green_layer[INIT_Y+i][INIT_X+j] = s_G[i][j];
+          blue_layer[INIT_Y+i][INIT_X+j] = s_B[i][j];
+        }
       }
   }
 
