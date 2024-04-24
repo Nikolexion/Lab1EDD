@@ -334,6 +334,48 @@ public:
     }
   }
 
+    void rotate_inv(){
+    unsigned char **tmp_layer = new unsigned char*[H_IMG];
+    for(int i=0; i < H_IMG; i++) 
+      tmp_layer[i] = new unsigned char[W_IMG];
+
+    // Mover la capa roja
+    for(int i = 0; i < H_IMG; i++){
+      for(int j = 0; j < W_IMG; j++){
+        tmp_layer[j][H_IMG - 1 - i] = red_layer[i][j];
+      }
+    }
+    for(int i = 0; i < H_IMG; i++) {
+        for(int j = 0; j < W_IMG; j++) {
+            red_layer[i][j] = tmp_layer[i][j];
+        }
+    }
+    
+    // Mover la capa verde
+    for(int i = 0; i < H_IMG; i++){
+      for(int j = 0; j < W_IMG; j++){
+        tmp_layer[j][H_IMG - 1 - i] = green_layer[i][j];
+      }
+    }
+    for(int i = 0; i < H_IMG; i++) {
+        for(int j = 0; j < W_IMG; j++) {
+            green_layer[i][j] = tmp_layer[i][j];
+        }
+    }
+
+    // Mover la capa azul
+    for(int i = 0; i < H_IMG; i++){
+      for(int j = 0; j < W_IMG; j++){
+        tmp_layer[j][H_IMG - 1 - i] = blue_layer[i][j];
+      }
+    }
+    for(int i = 0; i < H_IMG; i++) {
+        for(int j = 0; j < W_IMG; j++) {
+            blue_layer[i][j] = tmp_layer[i][j];
+        }
+    }
+  }
+
   void undo(){
     //No hacemos nada si el stack está vacío
     if (ctrlz.size() == 0) return;
