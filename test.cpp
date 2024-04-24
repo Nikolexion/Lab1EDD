@@ -14,6 +14,9 @@ int main() {
   sleep(2);
   im.move_right(100);
   im.draw("imagen.png");
+  sleep(2);
+  im.rotate();
+  im.draw("imagen.png");
   sleep(1);
   im.move_right(100);
   im.draw("imagen.png");
