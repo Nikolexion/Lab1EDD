@@ -2,7 +2,7 @@
 #define MOVING_IMG_H
 
 #include "basics.h"
-#include<deque>
+#include<queue>
 #include<utility>
 #include<stack>
 #include<unistd.h>
@@ -16,10 +16,9 @@ private:
   unsigned char **red_layer; // Capa de tonalidades rojas
   unsigned char **green_layer; // Capa de tonalidades verdes
   unsigned char **blue_layer; // Capa de tonalidades azules
-  std::stack<std::pair<int,int>> ctrlz; //Ocupamos un deque para guardar los movimientos hechos por el usuario
-  //solo por comodidad para traspasar
-  std::stack<std::pair<int,int>> ctrlmz;
-  std::deque<std::pair<int,int>> rep;
+  std::stack<std::pair<int,int>> ctrlz; //Ocupamos un stack para guardar los movimientos hechos por el usuario para poder insertar y sacar datos de la forma mas optima
+  std::stack<std::pair<int,int>> ctrlmz; //Ocupamos un stack para guardar los movimientos hechos con el undo
+  std::queue<std::pair<int,int>> rep; //Ocupamos un deque para guardar
   int contador = 1;
 
 public:
@@ -125,7 +124,7 @@ public:
     temp.first = 0;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push_back(temp);
+    rep.push(temp);
     
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -179,7 +178,7 @@ public:
     temp.first = 1;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push_back(temp);
+    rep.push(temp);
 
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -233,7 +232,7 @@ public:
     temp.first = 2;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push_back(temp);
+    rep.push(temp);
 
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -287,7 +286,7 @@ public:
     temp.first = 3;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push_back(temp);
+    rep.push(temp);
 
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -336,10 +335,9 @@ public:
   }
 
   void undo(){
-    //No hacemos nada si el stack 
+    //No hacemos nada si el stack está vacío
     if (ctrlz.size() == 0) return;
     
-
     std::pair<int,int> temp =  ctrlz.top();
     ctrlz.pop();
 
@@ -347,12 +345,14 @@ public:
     std::pair<int,int> temp2;
     temp2.first = 5;
     temp2.second =0;
-    rep.push_back(temp2);
+    rep.push(temp2);
 
+    //Hacemos un respaldo del stack donde se guardan los datos para redo y asi no perder los datos de él
     std::pair<int,int> temp_redo;
     std::stack<std::pair<int,int>> respaldo_redo;
     respaldo_redo.swap(ctrlmz);
 
+    //Accedemos a un switch para elegir la operación contraria a la última ejecutada
     switch (temp.first){
     case 0:
       temp_redo.first = 0;
@@ -398,7 +398,7 @@ public:
     std::pair<int,int> temp2;
     temp2.first = 6;
     temp2.first = 0;
-    rep.push_back(temp2);
+    rep.push(temp2);
     
     //Hacemos un respaldo del stack relacionado con redo para poder hacer multiples redo sin perder la informacion
     std::stack<std::pair<int,int>> respaldo_redo;
@@ -432,7 +432,7 @@ public:
     std::pair<int,int> temp2;
     temp2.first = 7;
     temp2.first = 0;
-    rep.push_back(temp2);
+    rep.push(temp2);
     std::pair<int,int> temp =  ctrlz.top();
 
     switch (temp.first){
@@ -471,7 +471,7 @@ public:
       //y guardando cada una en un archivo distinto
       while(rep.size() != 0){
         std::pair<int,int> temp = rep.front();
-        rep.pop_front();
+        rep.pop();
         switch (temp.first){
           case 0:
             move_left(temp.second);
