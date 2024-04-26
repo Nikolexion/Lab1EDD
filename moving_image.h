@@ -24,6 +24,18 @@ private:
   bool se_repitio = false; // Ocupado para que si es una función como undo, redo o repeat no agregue elementos a la cola de repeat_all
 
 public:
+  // Enum de acciones posibles
+  enum Action {
+        MOVE_LEFT,
+        MOVE_RIGHT,
+        MOVE_UP,
+        MOVE_DOWN,
+        ROTATE,
+        UNDO,
+        REDO,
+        REPEAT
+    };
+
   // Constructor de la imagen. Se crea una imagen por defecto
   moving_image() {
     // Reserva de memoria para las 3 matrices RGB
@@ -122,8 +134,9 @@ public:
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
     	blue_layer[i][j] = tmp_layer[i][j];
+
     std::pair<int,int> temp;
-    temp.first = 0;
+    temp.first = MOVE_LEFT;
     temp.second = d;
     ctrlz.push(temp);
     if(!se_repitio){
@@ -131,7 +144,6 @@ public:
     } else {
       se_repitio = false;
     }
-    
     
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -182,7 +194,7 @@ public:
             blue_layer[i][j] = tmp_layer[i][j];
 
     std::pair<int,int> temp;
-    temp.first = 1;
+    temp.first = MOVE_RIGHT;
     temp.second = d;
     ctrlz.push(temp);
     if(!se_repitio){
@@ -239,7 +251,7 @@ public:
     	blue_layer[i][j] = tmp_layer[i][j];
 
     std::pair<int,int> temp;
-    temp.first = 2;
+    temp.first = MOVE_UP;
     temp.second = d;
     ctrlz.push(temp);
     if(!se_repitio){
@@ -296,7 +308,7 @@ public:
     	blue_layer[i][j] = tmp_layer[i][j];
     
     std::pair<int,int> temp;
-    temp.first = 3;
+    temp.first = MOVE_DOWN;
     temp.second = d;
     ctrlz.push(temp);
     if(!se_repitio){
@@ -310,7 +322,7 @@ public:
 
   void rotate(){
     std::pair<int,int> temp;
-    temp.first = 4;
+    temp.first = ROTATE;
     temp.second = 0;
     ctrlz.push(temp);
     if(!se_repitio){
@@ -413,7 +425,7 @@ public:
 
     //Guardamos el par de datos correspondientes a undo en la queue relacionada a repeat_all
     std::pair<int,int> temp2;
-    temp2.first = 5;
+    temp2.first = UNDO;
     temp2.second =0;
     rep.push(temp2);
 
@@ -425,7 +437,7 @@ public:
     //Accedemos a un switch para elegir la operación contraria a la última ejecutada
     switch (temp.first){
     case 0:
-      temp_redo.first = 0;
+      temp_redo.first = MOVE_LEFT;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
       se_repitio = true;
@@ -434,7 +446,7 @@ public:
 
       break;
     case 1:
-      temp_redo.first = 1;
+      temp_redo.first = MOVE_RIGHT;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
       se_repitio = true;
@@ -442,7 +454,7 @@ public:
       ctrlz.pop();
       break;
     case 2:
-      temp_redo.first = 2;
+      temp_redo.first = MOVE_UP;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
       se_repitio = true;
@@ -450,7 +462,7 @@ public:
       ctrlz.pop();
       break;
     case 3:
-      temp_redo.first = 3;
+      temp_redo.first = MOVE_DOWN;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
       se_repitio = true;
@@ -458,7 +470,7 @@ public:
       ctrlz.pop();
 
     case 4:
-      temp_redo.first = 4;
+      temp_redo.first = ROTATE;
       temp_redo.second = 0;
       respaldo_redo.push(temp_redo);
       se_repitio = true;
@@ -478,7 +490,7 @@ public:
 
     //Guardamos el par de datos correspondientes a redo en la queue relacionada a repeat_all
     std::pair<int,int> temp2;
-    temp2.first = 6;
+    temp2.first = REDO;
     temp2.second = 0;
     rep.push(temp2);
     
@@ -488,23 +500,23 @@ public:
 
     //Entramos al switch para rehacer la acción
     switch (temp.first){
-    case 0:
+    case MOVE_LEFT:
       se_repitio = true;
       move_left(temp.second);
       break;
-    case 1:
+    case MOVE_RIGHT:
       se_repitio = true;
       move_right(temp.second);
       break;
-    case 2:
+    case MOVE_UP:
       se_repitio = true;
       move_up(temp.second);
       break;
-    case 3:
+    case MOVE_DOWN:
       se_repitio = true;
       move_down(temp.second);
       break;
-    case 4:
+    case ROTATE:
       se_repitio = true;
       rotate();
     default:
@@ -519,33 +531,33 @@ public:
   void repeat(){
     //Guardamos el par de datos correspondientes a repeat en la queue relacionada a repeat_all
     std::pair<int,int> temp2;
-    temp2.first = 7;
+    temp2.first = REPEAT;
     temp2.second = 0;
     rep.push(temp2);
     std::pair<int,int> temp =  ctrlz.top();
 
     switch (temp.first){
-    case 0:
+    case MOVE_LEFT:
       se_repitio = true;
       move_left(temp.second);
       break;
     
-    case 1:
+    case MOVE_RIGHT:
       se_repitio = true;
       move_right(temp.second);
       break;
 
-    case 2:
+    case MOVE_UP:
       se_repitio = true;
       move_up(temp.second);
       break;
 
-    case 3:
+    case MOVE_DOWN:
       se_repitio = true;
       move_down(temp.second);
       break;
     
-    case 4:
+    case ROTATE:
       se_repitio = true;
       rotate();
       break;
@@ -580,28 +592,28 @@ public:
         std::cout << temp.first << std::endl;
         rep.pop();
         switch (temp.first){
-          case 0:
+          case MOVE_LEFT:
             move_left(temp.second);
             break;
-          case 1:
+          case MOVE_RIGHT:
             move_right(temp.second);
             break;
-          case 2:
+          case MOVE_UP:
             move_up(temp.second);
             break;
-          case 3:
+          case MOVE_DOWN:
             move_down(temp.second);
             break;
-          case 4:
+          case ROTATE:
             rotate();
             break;
-          case 5:
+          case UNDO:
             undo();
             break;
-          case 6:
+          case REDO:
             redo();
             break;
-          case 7:
+          case REPEAT:
             repeat();
             break;
           default:
@@ -617,8 +629,9 @@ public:
         sleep(1);
       }
   }
-
-  void reset_image(){ //Reutilizamos el codigo que hay en el constructor para devolver la imagen al inicio
+  
+  //Reutilizamos el codigo que hay en el constructor para devolver la imagen al inicio
+  void reset_image(){ 
     // Llenamos la imagen con su color de fondo
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++) {

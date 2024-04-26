@@ -25,6 +25,22 @@ int main() {
   im.repeat();
   im.draw("imagen.png");
   sleep(1);
+  im.move_up(100);
+  im.draw("imagen.png");
+  sleep(1);
+  im.move_down(100);
+  im.draw("imagen.png");
+  sleep(1);
+  im.move_left(100);
+  im.draw("imagen.png");
+  sleep(1);
+  im.rotate();
+  im.draw("imagen.png");
+  sleep(1);
+  im.undo();
+  im.draw("imagen.png");
+  sleep(1);
+  
   im.repeat_all();
   /* NOTA 1: Si usan el mismo nombre para las imágenes, entonces cada llamada al
   método draw() sobreescribirá a la imagen */
