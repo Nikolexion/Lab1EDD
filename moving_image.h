@@ -143,12 +143,8 @@ public:
     temp.first = MOVE_LEFT;
     temp.second = d;
     ctrlz.push(temp);
-    if(!se_repitio){
-      rep.push(temp);
-    } else {
-      se_repitio = false;
-    }
-    
+    if(!se_repitio) rep.push(temp);
+    else se_repitio = false;    
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
   }
@@ -270,46 +266,46 @@ public:
   void move_down(int d) {
     unsigned char **tmp_layer = new unsigned char*[H_IMG];
     for(int i=0; i < H_IMG; i++) 
-      tmp_layer[i] = new unsigned char[W_IMG];
+        tmp_layer[i] = new unsigned char[W_IMG];
     
     // Mover la capa roja
     for(int i=d; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-	    tmp_layer[i][j] = red_layer[i-d][j];      
+	      tmp_layer[i][j] = red_layer[i-d][j];      
     
     for(int i=0, k=H_IMG - d; i < d; i++, k++)
       for(int j=0; j < W_IMG; j++)
-    	tmp_layer[i][j] = red_layer[k][j];      
+    	  tmp_layer[i][j] = red_layer[k][j];      
 
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-	    red_layer[i][j] = tmp_layer[i][j];
+	      red_layer[i][j] = tmp_layer[i][j];
 
     // Mover la capa verde
     for(int i=d; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-    	tmp_layer[i][j] = green_layer[i-d][j];      
+    	  tmp_layer[i][j] = green_layer[i-d][j];      
     
     for(int i=0, k=H_IMG - d; i < d; i++, k++)
       for(int j=0; j < W_IMG; j++)
-    	tmp_layer[i][j] = green_layer[k][j];      
+    	  tmp_layer[i][j] = green_layer[k][j];      
 
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-    	green_layer[i][j] = tmp_layer[i][j];
+    	  green_layer[i][j] = tmp_layer[i][j];
 
     // Mover la capa azul
     for(int i=d; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-    	tmp_layer[i][j] = blue_layer[i-d][j];      
+    	  tmp_layer[i][j] = blue_layer[i-d][j];      
     
     for(int i=0, k=H_IMG - d; i < d; i++, k++)
       for(int j=0; j < W_IMG; j++)
-    	tmp_layer[i][j] = blue_layer[k][j];      
+    	  tmp_layer[i][j] = blue_layer[k][j];      
 
     for(int i=0; i < H_IMG; i++)
       for(int j=0; j < W_IMG; j++)
-    	blue_layer[i][j] = tmp_layer[i][j];
+    	  blue_layer[i][j] = tmp_layer[i][j];
 
     // Agregamos la accion a la pila de undo
     std::pair<int,int> temp;
@@ -381,8 +377,8 @@ public:
         tmp_layer[j][H_IMG - 1 - i] = red_layer[i][j];
       
     for(int i = 0; i < H_IMG; i++) 
-        for(int j = 0; j < W_IMG; j++) 
-            red_layer[i][j] = tmp_layer[i][j];
+      for(int j = 0; j < W_IMG; j++) 
+        red_layer[i][j] = tmp_layer[i][j];
         
     // Mover la capa verde
     for(int i = 0; i < H_IMG; i++)
@@ -390,8 +386,8 @@ public:
         tmp_layer[j][H_IMG - 1 - i] = green_layer[i][j];    
     
     for(int i = 0; i < H_IMG; i++) 
-        for(int j = 0; j < W_IMG; j++) 
-            green_layer[i][j] = tmp_layer[i][j];
+      for(int j = 0; j < W_IMG; j++) 
+        green_layer[i][j] = tmp_layer[i][j];
         
     // Mover la capa azul
     for(int i = 0; i < H_IMG; i++)
@@ -399,8 +395,8 @@ public:
         tmp_layer[j][H_IMG - 1 - i] = blue_layer[i][j];
       
     for(int i = 0; i < H_IMG; i++) 
-        for(int j = 0; j < W_IMG; j++) 
-            blue_layer[i][j] = tmp_layer[i][j];
+      for(int j = 0; j < W_IMG; j++) 
+        blue_layer[i][j] = tmp_layer[i][j];
   }
 
   void undo(){
@@ -423,7 +419,7 @@ public:
 
     // Accedemos a un switch para elegir la operación contraria a la última ejecutada
     switch (temp.first){
-    case 0:
+    case MOVE_LEFT:
       temp_redo.first = MOVE_LEFT;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
@@ -432,7 +428,7 @@ public:
       ctrlz.pop();
       break;
       
-    case 1:
+    case MOVE_RIGHT:
       temp_redo.first = MOVE_RIGHT;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
@@ -441,7 +437,7 @@ public:
       ctrlz.pop();
       break;
 
-    case 2:
+    case MOVE_UP:
       temp_redo.first = MOVE_UP;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
@@ -450,7 +446,7 @@ public:
       ctrlz.pop();
       break;
 
-    case 3:
+    case MOVE_DOWN:
       temp_redo.first = MOVE_DOWN;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
@@ -459,7 +455,7 @@ public:
       ctrlz.pop();
       break;
 
-    case 4:
+    case ROTATE:
       temp_redo.first = ROTATE;
       temp_redo.second = 0;
       respaldo_redo.push(temp_redo);
