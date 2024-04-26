@@ -10,21 +10,19 @@
 
 int main() {
   moving_image im;
-  im.draw("imagen01.png");
-  sleep(2);
   im.move_right(100);
   im.draw("imagen.png");
   sleep(1);
-  im.repeat();
+  im.undo();
   im.draw("imagen.png");
   sleep(1);
-  im.repeat();
+  im.redo();
   im.draw("imagen.png");
   sleep(1);
   im.rotate();
   im.draw("imagen.png");
   sleep(1);
-  im.undo();
+  im.repeat();
   im.draw("imagen.png");
   sleep(1);
   im.repeat_all();

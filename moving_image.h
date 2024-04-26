@@ -7,6 +7,7 @@
 #include<stack>
 #include<unistd.h>
 #include <sstream>
+#include <iostream>
 
 // Clase que representa una imagen como una colección de 3 matrices siguiendo el
 // esquema de colores RGB
@@ -16,10 +17,11 @@ private:
   unsigned char **red_layer; // Capa de tonalidades rojas
   unsigned char **green_layer; // Capa de tonalidades verdes
   unsigned char **blue_layer; // Capa de tonalidades azules
-  std::stack<std::pair<int,int>> ctrlz; //Ocupamos un stack para guardar los movimientos hechos por el usuario para poder insertar y sacar datos de la forma mas optima
-  std::stack<std::pair<int,int>> ctrlmz; //Ocupamos un stack para guardar los movimientos hechos con el undo
-  std::queue<std::pair<int,int>> rep; //Ocupamos un deque para guardar
+  std::stack<std::pair<int,int>> ctrlz; // Ocupamos un stack para guardar los movimientos hechos por el usuario para poder insertar y sacar datos de la forma mas optima
+  std::stack<std::pair<int,int>> ctrlmz; // Ocupamos un stack para guardar los movimientos hechos con el undo
+  std::queue<std::pair<int,int>> rep; // Ocupamos un deque para guardar todos los movimientos
   int contador = 2;
+  bool se_repitio = false; // Ocupado para que si es una función como undo, redo o repeat no agregue elementos a la cola de repeat_all
 
 public:
   // Constructor de la imagen. Se crea una imagen por defecto
@@ -124,7 +126,12 @@ public:
     temp.first = 0;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push(temp);
+    if(!se_repitio){
+      rep.push(temp);
+    } else {
+      se_repitio = false;
+    }
+    
     
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
@@ -178,8 +185,11 @@ public:
     temp.first = 1;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push(temp);
-
+    if(!se_repitio){
+      rep.push(temp);
+    } else {
+      se_repitio = false;
+    }
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
   }
@@ -232,8 +242,11 @@ public:
     temp.first = 2;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push(temp);
-
+    if(!se_repitio){
+      rep.push(temp);
+    } else {
+      se_repitio = false;
+    }
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
   }
@@ -286,8 +299,11 @@ public:
     temp.first = 3;
     temp.second = d;
     ctrlz.push(temp);
-    rep.push(temp);
-
+    if(!se_repitio){
+      rep.push(temp);
+    } else {
+      se_repitio = false;
+    }
     std::stack<std::pair<int,int>> basura;
     basura.swap(ctrlmz);
   }
@@ -297,7 +313,11 @@ public:
     temp.first = 4;
     temp.second = 0;
     ctrlz.push(temp);
-    rep.push(temp);
+    if(!se_repitio){
+      rep.push(temp);
+    } else {
+      se_repitio = false;
+    }
 
     unsigned char **tmp_layer = new unsigned char*[H_IMG];
     for(int i=0; i < H_IMG; i++) 
@@ -408,6 +428,7 @@ public:
       temp_redo.first = 0;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
+      se_repitio = true;
       move_right(temp.second);
       ctrlz.pop();
 
@@ -416,6 +437,7 @@ public:
       temp_redo.first = 1;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
+      se_repitio = true;
       move_left(temp.second);
       ctrlz.pop();
       break;
@@ -423,6 +445,7 @@ public:
       temp_redo.first = 2;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
+      se_repitio = true;
       move_down(temp.second);
       ctrlz.pop();
       break;
@@ -430,6 +453,7 @@ public:
       temp_redo.first = 3;
       temp_redo.second = temp.second;
       respaldo_redo.push(temp_redo); 
+      se_repitio = true;
       move_up(temp.second);
       ctrlz.pop();
 
@@ -437,6 +461,7 @@ public:
       temp_redo.first = 4;
       temp_redo.second = 0;
       respaldo_redo.push(temp_redo);
+      se_repitio = true;
       rotate_inv();
       ctrlz.pop();
     default:
@@ -454,7 +479,7 @@ public:
     //Guardamos el par de datos correspondientes a redo en la queue relacionada a repeat_all
     std::pair<int,int> temp2;
     temp2.first = 6;
-    temp2.first = 0;
+    temp2.second = 0;
     rep.push(temp2);
     
     //Hacemos un respaldo del stack relacionado con redo para poder hacer multiples redo sin perder la informacion
@@ -464,18 +489,23 @@ public:
     //Entramos al switch para rehacer la acción
     switch (temp.first){
     case 0:
+      se_repitio = true;
       move_left(temp.second);
       break;
     case 1:
+      se_repitio = true;
       move_right(temp.second);
       break;
     case 2:
+      se_repitio = true;
       move_up(temp.second);
       break;
     case 3:
+      se_repitio = true;
       move_down(temp.second);
       break;
     case 4:
+      se_repitio = true;
       rotate();
     default:
       break;
@@ -490,28 +520,33 @@ public:
     //Guardamos el par de datos correspondientes a repeat en la queue relacionada a repeat_all
     std::pair<int,int> temp2;
     temp2.first = 7;
-    temp2.first = 0;
+    temp2.second = 0;
     rep.push(temp2);
     std::pair<int,int> temp =  ctrlz.top();
 
     switch (temp.first){
     case 0:
+      se_repitio = true;
       move_left(temp.second);
       break;
     
     case 1:
+      se_repitio = true;
       move_right(temp.second);
       break;
 
     case 2:
+      se_repitio = true;
       move_up(temp.second);
       break;
 
     case 3:
+      se_repitio = true;
       move_down(temp.second);
       break;
     
     case 4:
+      se_repitio = true;
       rotate();
       break;
     
@@ -526,21 +561,24 @@ public:
       if (rep.empty()){
         return;
       }
-      //Borramos los datos anteriormente guardados en el stack ctrlz
+      // Borramos los datos anteriormente guardados en el stack ctrlz
       std::stack<std::pair<int,int>> basura;
       basura.swap(ctrlz);
-      //Ocupamos una queue alternativa para no quedar en un bucle infinito
-      std::queue<std::pair<int,int>> temp_rep;
-      temp_rep.swap(rep);
-
+      // Ocupamos una queue alternativa para no quedar en un bucle infinito
+      //std::queue<std::pair<int,int>> temp_rep;
+      //temp_rep.swap(rep);
+      
+      // Hacemos reset para que la imagen vuelva a su estado inicial
       reset_image();
       draw("imagen1.png");
 
-      //Empezamos a iterar por toda la queue de repeat_all ejecutando todas las acciones de nuevo
-      //y guardando cada una en un archivo distinto
-      while(temp_rep.size() != 0){
-        std::pair<int,int> temp = temp_rep.front();
-        temp_rep.pop();
+      // Empezamos a iterar por toda la queue de repeat_all ejecutando todas las acciones de nuevo
+      // y guardando cada una en un archivo distinto
+      size_t count = rep.size();
+      for(int i = 0; i < count; i++){
+        std::pair<int,int> temp = rep.front();
+        std::cout << temp.first << std::endl;
+        rep.pop();
         switch (temp.first){
           case 0:
             move_left(temp.second);
